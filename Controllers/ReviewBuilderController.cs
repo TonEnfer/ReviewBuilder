@@ -28,7 +28,7 @@ namespace ReviewBuilder.Controllers
         {
             string path = "./wwwroot/Files/";
             long size = files.Sum(f => f.Length);
-            UserModel user = _context.UserModel.Find(id);
+            User user = _context.UserModel.Find(id);
             string newPath = path + id + "/";
             if (user == null)
                 return BadRequest("Id not found");
@@ -41,7 +41,7 @@ namespace ReviewBuilder.Controllers
                     {
                         await UploadedFile.CopyToAsync(fileStream);
                     }
-                    FieldFileModel f = new FieldFileModel();
+                    FieldFileData f = new FieldFileData();
                     f.Id = (user.fieldFiles == null || user.fieldFiles.Count == 0) ?
                      0 : user.fieldFiles.Last().Id + 1;
                     f.Name = UploadedFile.Name;
@@ -61,7 +61,7 @@ namespace ReviewBuilder.Controllers
                 id = _context.UserModel.Last().Id + 1;
             else
                 id = 0;
-            _context.UserModel.Add(new UserModel() { Id = id });
+            _context.UserModel.Add(new User() { Id = id });
             _context.SaveChangesAsync();
             return Ok(new { id = id });
         }
@@ -94,7 +94,7 @@ namespace ReviewBuilder.Controllers
             memory.Position = 0;
             return File(memory, GetContentType(path), Path.GetFileName(path));
         }
-        
+
         private string GetContentType(string path)
         {
             var types = GetMimeTypes();
@@ -120,7 +120,18 @@ namespace ReviewBuilder.Controllers
                 {".zip","application/zip"}
             };
         }
-
-
+        [HttpGet("BuildFiles/{id}")]
+        public async Task<IActionResult> BuildFiles(int id)
+        {
+            return Ok();
+        }
+        private bool CheckFileFormat(string filePath)
+        {
+            return Path.GetExtension(filePath).ToLowerInvariant() == ".xlsx";
+        }
+        private bool CheckFileStruct(string filePath)
+        {
+            return false;
+        }
     }
 }
