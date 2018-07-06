@@ -9,7 +9,7 @@ namespace ReviewBuilder.Models
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         { }
-        public DbSet<UserModel> UserModel { get; set; }
+        public DbSet<User> UserModel { get; set; }
         //public DbSet<FileModel> Files { get; set; }
          protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -1,0 +1,8 @@
+<XML>
+	<STR address="A1">Дисциплина</STR>
+	<STR address="A2">Тема</STR>
+	<STR address="A3">ФИО студента</STR>
+	<STR address="A4">Группа</STR>
+	<STR address="A5">Руководитель</STR>
+	<STR address="A6">Оценка</STR>
+</XML>

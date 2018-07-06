@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ReviewBuilder.Migrations
 {
-    public partial class NewMigration : Migration
+    public partial class Mmm : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,8 +11,7 @@ namespace ReviewBuilder.Migrations
                 name: "UserModel",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(nullable: false),
                     builded = table.Column<bool>(nullable: false),
                     dt = table.Column<DateTime>(nullable: false)
                 },
@@ -22,7 +21,7 @@ namespace ReviewBuilder.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FileModel",
+                name: "FileData",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -30,21 +29,21 @@ namespace ReviewBuilder.Migrations
                     Name = table.Column<string>(nullable: true),
                     Path = table.Column<string>(nullable: true),
                     Discriminator = table.Column<string>(nullable: false),
-                    UserModelId = table.Column<int>(nullable: true),
-                    UserModelId1 = table.Column<int>(nullable: true)
+                    UserId = table.Column<string>(nullable: true),
+                    UserId1 = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FileModel", x => x.Id);
+                    table.PrimaryKey("PK_FileData", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FileModel_UserModel_UserModelId1",
-                        column: x => x.UserModelId1,
+                        name: "FK_FileData_UserModel_UserId1",
+                        column: x => x.UserId1,
                         principalTable: "UserModel",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FileModel_UserModel_UserModelId",
-                        column: x => x.UserModelId,
+                        name: "FK_FileData_UserModel_UserId",
+                        column: x => x.UserId,
                         principalTable: "UserModel",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -61,15 +60,15 @@ namespace ReviewBuilder.Migrations
                     StudentName = table.Column<string>(nullable: true),
                     StudentGroup = table.Column<string>(nullable: true),
                     ChiefName = table.Column<string>(nullable: true),
-                    FieldFileModelId = table.Column<int>(nullable: true)
+                    FieldFileDataId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ReviewFields", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReviewFields_FileModel_FieldFileModelId",
-                        column: x => x.FieldFileModelId,
-                        principalTable: "FileModel",
+                        name: "FK_ReviewFields_FileData_FieldFileDataId",
+                        column: x => x.FieldFileDataId,
+                        principalTable: "FileData",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -99,19 +98,19 @@ namespace ReviewBuilder.Migrations
                 column: "ReviewFieldsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileModel_UserModelId1",
-                table: "FileModel",
-                column: "UserModelId1");
+                name: "IX_FileData_UserId1",
+                table: "FileData",
+                column: "UserId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FileModel_UserModelId",
-                table: "FileModel",
-                column: "UserModelId");
+                name: "IX_FileData_UserId",
+                table: "FileData",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewFields_FieldFileModelId",
+                name: "IX_ReviewFields_FieldFileDataId",
                 table: "ReviewFields",
-                column: "FieldFileModelId");
+                column: "FieldFileDataId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -123,7 +122,7 @@ namespace ReviewBuilder.Migrations
                 name: "ReviewFields");
 
             migrationBuilder.DropTable(
-                name: "FileModel");
+                name: "FileData");
 
             migrationBuilder.DropTable(
                 name: "UserModel");

@@ -30,7 +30,7 @@ namespace ReviewBuilder.Migrations
                     b.ToTable("Evaluation");
                 });
 
-            modelBuilder.Entity("ReviewBuilder.Models.FileModel", b =>
+            modelBuilder.Entity("ReviewBuilder.Models.FileData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -42,15 +42,15 @@ namespace ReviewBuilder.Migrations
 
                     b.Property<string>("Path");
 
-                    b.Property<int?>("UserModelId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserModelId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("FileModel");
+                    b.ToTable("FileData");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("FileModel");
+                    b.HasDiscriminator<string>("Discriminator").HasValue("FileData");
                 });
 
             modelBuilder.Entity("ReviewBuilder.Models.ReviewFields", b =>
@@ -62,7 +62,7 @@ namespace ReviewBuilder.Migrations
 
                     b.Property<string>("Discipline");
 
-                    b.Property<int?>("FieldFileModelId");
+                    b.Property<int?>("FieldFileDataId");
 
                     b.Property<string>("StudentGroup");
 
@@ -72,14 +72,14 @@ namespace ReviewBuilder.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FieldFileModelId");
+                    b.HasIndex("FieldFileDataId");
 
                     b.ToTable("ReviewFields");
                 });
 
-            modelBuilder.Entity("ReviewBuilder.Models.UserModel", b =>
+            modelBuilder.Entity("ReviewBuilder.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<bool>("builded");
@@ -91,17 +91,17 @@ namespace ReviewBuilder.Migrations
                     b.ToTable("UserModel");
                 });
 
-            modelBuilder.Entity("ReviewBuilder.Models.FieldFileModel", b =>
+            modelBuilder.Entity("ReviewBuilder.Models.FieldFileData", b =>
                 {
-                    b.HasBaseType("ReviewBuilder.Models.FileModel");
+                    b.HasBaseType("ReviewBuilder.Models.FileData");
 
-                    b.Property<int?>("UserModelId1");
+                    b.Property<string>("UserId1");
 
-                    b.HasIndex("UserModelId1");
+                    b.HasIndex("UserId1");
 
-                    b.ToTable("FieldFileModel");
+                    b.ToTable("FieldFileData");
 
-                    b.HasDiscriminator().HasValue("FieldFileModel");
+                    b.HasDiscriminator().HasValue("FieldFileData");
                 });
 
             modelBuilder.Entity("ReviewBuilder.Models.Evaluation", b =>
@@ -111,25 +111,25 @@ namespace ReviewBuilder.Migrations
                         .HasForeignKey("ReviewFieldsId");
                 });
 
-            modelBuilder.Entity("ReviewBuilder.Models.FileModel", b =>
+            modelBuilder.Entity("ReviewBuilder.Models.FileData", b =>
                 {
-                    b.HasOne("ReviewBuilder.Models.UserModel")
+                    b.HasOne("ReviewBuilder.Models.User")
                         .WithMany("buildFiles")
-                        .HasForeignKey("UserModelId");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("ReviewBuilder.Models.ReviewFields", b =>
                 {
-                    b.HasOne("ReviewBuilder.Models.FieldFileModel")
+                    b.HasOne("ReviewBuilder.Models.FieldFileData")
                         .WithMany("reviewFields")
-                        .HasForeignKey("FieldFileModelId");
+                        .HasForeignKey("FieldFileDataId");
                 });
 
-            modelBuilder.Entity("ReviewBuilder.Models.FieldFileModel", b =>
+            modelBuilder.Entity("ReviewBuilder.Models.FieldFileData", b =>
                 {
-                    b.HasOne("ReviewBuilder.Models.UserModel")
+                    b.HasOne("ReviewBuilder.Models.User")
                         .WithMany("fieldFiles")
-                        .HasForeignKey("UserModelId1");
+                        .HasForeignKey("UserId1");
                 });
 #pragma warning restore 612, 618
         }
