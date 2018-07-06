@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -21,7 +22,7 @@
                 <div class="col">
                     <div class="input-group">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input form-control" name="inputfile" id="inputfile">
+                            <input type="file" class="custom-file-input form-control" name="files" id="files">
                             <label class="custom-file-label">Загрузите файл с данными о работах</label>
                         </div>
                         <div class="input-group-append">
@@ -62,6 +63,9 @@
                         <strong>Ошибка. Такой токен не найден. Проверьте правильность введенного токена, либо загрузите файл заново
                             и получите новый.</strong>
                     </div>
+                    <div class="alert alert-warning my-3 fade collapse" role="alert" id="incorrectFileAlert">
+                        <strong>Ошибка файла. Файл неправильного типа или вообще не очень. Проверьте файл и повторите ещё разок.</strong>
+                    </div>
                 </div>
             </div>
         </form>
@@ -79,8 +83,12 @@
 
                 <div class="modal-body">
                     <p>Ваш файл загружен и теперь обрабатывается.</p>
-                    <p>Вы можете подаждать архив с рецензиями здесь, а можете взять вот этот токен
-                        <strong id="acquiredToken">123ab5651cd685</strong> и ввести его на страницу позже.</p>
+                    <p>Вы можете подаждать архив с рецензиями здесь, а можете взять вот этот токен и ввести его на страницу
+                        позже.
+                    </p>
+                    <h1 class="text-center">
+                        <strong class="badge badge-success" id="acquiredToken">123ab5651cd685</strong>
+                    </h1>
                     <p>Обработка не должна занять долгое время и файл скоро появится.</p>
                     <p>Если файл не появляется, возьмите токен и введите его.</p>
                 </div>
@@ -95,11 +103,10 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
-
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
         crossorigin="anonymous"></script>
 
