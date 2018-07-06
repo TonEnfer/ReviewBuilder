@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO.Compression;
+using System.Text;
 
 namespace ReviewBuilder.Controllers
 {
@@ -23,47 +24,44 @@ namespace ReviewBuilder.Controllers
             // if(_context.UserModel.Count() != 0)
             //     _context.UserModel.Add(new UserModel{Id = 0});
         }
-        [HttpPost("UploadFiles/{id}")]
-        public async Task<IActionResult> UploadFiles(int id, IFormFileCollection files)
+        [HttpPost("UploadFiles")]
+        public async Task<IActionResult> UploadFiles(IFormFileCollection files)
         {
             string path = "./wwwroot/Files/";
             long size = files.Sum(f => f.Length);
+            string id = GetToken();
             User user = _context.UserModel.Find(id);
             string newPath = path + id + "/";
-            if (user == null)
-                return BadRequest("Id not found");
-            else
+            Directory.CreateDirectory(path + id);
+            foreach (var UploadedFile in files)
             {
-                Directory.CreateDirectory(path + id);
-                foreach (var UploadedFile in files)
+                using (var fileStream =
+                new FileStream(newPath + UploadedFile.FileName, FileMode.Create))
                 {
-                    using (var fileStream = new FileStream(newPath + UploadedFile.FileName, FileMode.Create))
-                    {
-                        await UploadedFile.CopyToAsync(fileStream);
-                    }
-                    FieldFileData f = new FieldFileData();
-                    f.Id = (user.fieldFiles == null || user.fieldFiles.Count == 0) ?
-                     0 : user.fieldFiles.Last().Id + 1;
-                    f.Name = UploadedFile.Name;
-                    f.Path = newPath;
-                    user.fieldFiles.Add(f);
-                    _context.UserModel.Update(user);
+                    await UploadedFile.CopyToAsync(fileStream);
                 }
-                _context.SaveChanges();
+                FieldFileData f = new FieldFileData();
+                f.Id = (user.fieldFiles == null || user.fieldFiles.Count == 0) ?
+                 0 : user.fieldFiles.Last().Id + 1;
+                f.Name = UploadedFile.Name;
+                f.Path = newPath;
+                user.fieldFiles.Add(f);
+                _context.UserModel.Update(user);
             }
-            return Ok(new { count = files.Count, size, newPath });
+            _context.SaveChanges();
+
+            return Ok(new { Id = id });
         }
-        [HttpGet("GetToken")]
-        public ActionResult<int> GetToken()
+        public string GetToken()
         {
-            int id;
-            if (_context.UserModel.Count() != 0)
-                id = _context.UserModel.Last().Id + 1;
-            else
-                id = 0;
-            _context.UserModel.Add(new User() { Id = id });
+            Random r = new Random();
+            StringBuilder sb = new StringBuilder();
+            string id = r.Next(1000000, 9999999).ToString("X");
+            while (_context.UserModel.Find(id) != null)
+                id = r.Next(1000000, 9999999).ToString("X");
+            _context.UserModel.Add(new User() { Id = id, dt = DateTime.Now });
             _context.SaveChangesAsync();
-            return Ok(new { id = id });
+            return id;
         }
         [HttpGet("GetBuilded/{id}")]
         public ActionResult<bool> GetBuilded(int id)
@@ -72,7 +70,7 @@ namespace ReviewBuilder.Controllers
                 return NotFound();
             return Ok(new { builded = _context.UserModel.Find(id).builded });
         }
-        
+
         [HttpGet("GetFiles/{id}")]
         public async Task<IActionResult> GetFiles(int id)
         {
@@ -123,6 +121,7 @@ namespace ReviewBuilder.Controllers
         [HttpGet("BuildFiles/{id}")]
         public async Task<IActionResult> BuildFiles(int id)
         {
+            //int a = 0;
             return Ok();
         }
         private bool CheckFileFormat(string filePath)
