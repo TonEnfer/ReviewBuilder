@@ -126,7 +126,6 @@ namespace ReviewBuilder.Controllers
         [HttpGet("BuildFiles/{id}")]
         public async Task<IActionResult> BuildFiles(int id)
         {
-            //int a = 0;
             return Ok();
         }
         private bool CheckFileFormat(string filePath)
