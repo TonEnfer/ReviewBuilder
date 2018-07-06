@@ -28,9 +28,18 @@ function requestStatusFromServer(val) {
 }
 
 $("#fileSubmitForm").on('submit', function (ev) {
-    showModal("133asd");
-    // $("#modalReadyAlert").collapse('show');
     ev.preventDefault();
+    showModal("133asd");
+
+    let formdata = new FormData($("#fileSubmitForm"));
+
+
+    $.post(
+        "api/ReviewBuilder/UploadFiles"
+    );
+    // $("#fileSumbitForm").ajaxSubmit({ url: "/api/ReviewBuilder/UploadFiles", type: "post" });
+    // $("#modalReadyAlert").collapse('show');
+
 });
 
 $("#tokenSubmitForm").on('submit', function (ev) {
