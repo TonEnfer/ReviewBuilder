@@ -9,6 +9,11 @@ using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO.Compression;
 using System.Text;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Packaging;
+
 
 namespace ReviewBuilder.Controllers
 {
@@ -25,34 +30,43 @@ namespace ReviewBuilder.Controllers
             //     _context.UserModel.Add(new UserModel{Id = 0});
         }
         [HttpPost("UploadFiles")]
-        public async Task<IActionResult> UploadFiles(IFormFileCollection files)
+        public async Task<IActionResult> UploadFiles(IFormFile files)
         {
+
+            if (files == null)
+            {
+                Console.WriteLine("No file found");
+                return NotFound();
+            }
+            long size = files.Length;
+
+            Console.WriteLine("\r\n!!!!New file {0}, files size: {1}\r\n", files.FileName, size);
+
+
             string path = "./wwwroot/Files/";
-            long size = files.Sum(f => f.Length);
             string id = GetToken();
             User user = _context.UserModel.Find(id);
             string newPath = path + id + "/";
             Directory.CreateDirectory(path + id);
-            foreach (var UploadedFile in files)
+            // foreach (var UploadedFile in files)
+            // {
+            using (var fileStream =
+            new FileStream(newPath + files.FileName, FileMode.Create))
             {
-                using (var fileStream =
-                new FileStream(newPath + UploadedFile.FileName, FileMode.Create))
-                {
-                    await UploadedFile.CopyToAsync(fileStream);
-                    if (!CheckFileFormat(newPath + UploadedFile.FileName) ||
-                     !CheckFileStruct(newPath + UploadedFile.FileName))
-                        return BadRequest(new { Message = "Bad File" + UploadedFile.FileName });
+                await files.CopyToAsync(fileStream);
+                if (!CheckFileFormat(newPath + files.FileName) ||
+                 !CheckFileStruct(newPath + files.FileName))
+                    return BadRequest(new { Message = "Bad File" + files.FileName });
 
-                }
-
-                FieldFileData f = new FieldFileData();
-                f.Id = (user.fieldFiles == null || user.fieldFiles.Count == 0) ?
-                 0 : user.fieldFiles.Last().Id + 1;
-                f.Name = UploadedFile.Name;
-                f.Path = newPath;
-                user.fieldFiles.Add(f);
-                _context.UserModel.Update(user);
             }
+            FieldFileData f = new FieldFileData();
+            f.Id = (user.fieldFiles == null || user.fieldFiles.Count == 0) ?
+             0 : user.fieldFiles.Last().Id + 1;
+            f.Name = files.Name;
+            f.Path = newPath;
+            user.fieldFiles.Add(f);
+            _context.UserModel.Update(user);
+            // }
             _context.SaveChanges();
 
             return Ok(new { Id = id });
@@ -135,7 +149,7 @@ namespace ReviewBuilder.Controllers
         }
         private bool CheckFileStruct(string filePath)
         {
-            return false;
+            return true;
         }
     }
 }

@@ -3,6 +3,7 @@ function showAlert(name) {
     $("#readyAlert").collapse('hide');
     $("#errorAlert").collapse('hide');
     $("#processingAlert").collapse('hide');
+    $("#incorrectFileAlert").collapse('hide');
 
     switch (name) {
         case 'ready':
@@ -13,6 +14,9 @@ function showAlert(name) {
             break;
         case 'processing':
             $("#processingAlert").collapse('show');
+            break;
+        case 'incorrectFile':
+            $("#incorrectFileAlert").collapse('show');
             break;
     }
     return false;
@@ -29,15 +33,22 @@ function requestStatusFromServer(val) {
 
 $("#fileSubmitForm").on('submit', function (ev) {
     ev.preventDefault();
-    showModal("133asd");
 
-    let formdata = new FormData($("#fileSubmitForm"));
+    var data = new FormData();
+    data.append("files", $("#files")[0].files[0]);
 
+    $.ajax("api/ReviewBuilder/UploadFiles",
+        {
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
+            dataType: 'json'
+        }
+    ).done(function (data) { showAlert('processing'); showModal(data.id); }
+    ).fail(function () { showAlert('incorrectFile'); });
 
-    $.post(
-        "api/ReviewBuilder/UploadFiles"
-    );
-    // $("#fileSumbitForm").ajaxSubmit({ url: "/api/ReviewBuilder/UploadFiles", type: "post" });
     // $("#modalReadyAlert").collapse('show');
 
 });
