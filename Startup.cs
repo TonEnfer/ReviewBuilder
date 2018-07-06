@@ -10,8 +10,11 @@ namespace ReviewBuilder
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationContext>(opt =>
-                opt.UseSqlite("Data Source=data.db"));
+            // services.AddDbContext<ApplicationContext>(opt =>
+            //     opt.UseSqlite("Data Source=data.db"));
+            // services.AddDbContext<ApplicationContext>(opt =>
+            //         opt.UseInMemoryDatabase("AppContext"));
+                    
             services.AddMvc()
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //.ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Trace));

@@ -1,15 +1,30 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace ReviewBuilder.Models
 {
-    public class User
+    public class UserData
     {
-        public string Id { get; set; }
-        public List<FieldFileData> fieldFiles { get; set; } = new List<FieldFileData>();
-        public List<FileData> buildFiles { get; set; } = new List<FileData>();
-        public bool builded { get; set; }
-        public DateTime dt { get; set; }
+        //[Key]
+        
+        public List<ReviewFields> reviewFields { get; set; }
+        public MemoryStream inputFile {get; set;}
+        public MemoryStream outputFile {get;set;}
+        public bool isReady {get; set;} 
+        public bool isFailed {get; set;}
+        public DateTime downloadedTime {get; set;}
+
+        public UserData()
+        {
+            isReady = false;
+            isFailed = false;
+            inputFile = new MemoryStream();
+            outputFile = new MemoryStream();
+            downloadedTime = new DateTime();
+        }
+
 
     }
 }

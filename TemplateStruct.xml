@@ -1,8 +1,8 @@
 <XML>
-	<STR address="A1">Дисциплина</STR>
-	<STR address="A2">Тема</STR>
-	<STR address="A3">ФИО студента</STR>
-	<STR address="A4">Группа</STR>
-	<STR address="A5">Руководитель</STR>
-	<STR address="A6">Оценка</STR>
+	<STR address="A">Дисциплина</STR>
+	<STR address="B">Тема</STR>
+	<STR address="C">ФИО студента</STR>
+	<STR address="D">Группа</STR>
+	<STR address="E">Руководитель</STR>
+	<STR address="F">Оценка</STR>
 </XML>
