@@ -39,7 +39,12 @@ namespace ReviewBuilder.Controllers
                 new FileStream(newPath + UploadedFile.FileName, FileMode.Create))
                 {
                     await UploadedFile.CopyToAsync(fileStream);
+                    if (!CheckFileFormat(newPath + UploadedFile.FileName) ||
+                     !CheckFileStruct(newPath + UploadedFile.FileName))
+                        return BadRequest(new { Message = "Bad File" + UploadedFile.FileName });
+
                 }
+
                 FieldFileData f = new FieldFileData();
                 f.Id = (user.fieldFiles == null || user.fieldFiles.Count == 0) ?
                  0 : user.fieldFiles.Last().Id + 1;
