@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
+
 using ReviewBuilder.Models;
 
 namespace ReviewBuilder
@@ -16,13 +17,24 @@ namespace ReviewBuilder
     {
         public static void Main(string[] args)
         {
+            using (var file = new FileStream("Template.docx", FileMode.Open))
+            {
+                file.CopyTo(ApplicationContext.templateFile);
+            }
+            var q = XElement.Load("TemplateStruct.xml");
+            foreach (var e in q.Elements("STR"))
+            {
+                var addr = (string)e.Attribute("address").Value;
+                var val = (string)e.Value;
+                ApplicationContext.checkCellList.Add(addr, val);
+            }
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
-        public static ConcurrentDictionary<string, UserData> UsersData =
-            new ConcurrentDictionary<string, UserData>();
+
     }
 }

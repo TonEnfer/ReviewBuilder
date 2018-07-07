@@ -59,8 +59,21 @@ namespace ReviewBuilder.Excel
             if (c.CellValue == null)
                 return "0";
 
+
             return c.CellValue.Text;
         }
+        public static string GetCellText(SharedStringTablePart sst,Row r, string col)
+        {
+            Cell c = GetCell(r, col);
+            if (c == null)
+                return "0";
+            if (c.CellValue == null)
+                return "0";
+            if (c.DataType == "S")
+                return FindStringValue(sst,Convert.ToInt32(c.CellValue.Text));
+            return c.CellValue.Text;
+        }
+
 
 
         public static Worksheet GetWorksheet(SpreadsheetDocument document, string worksheetName)

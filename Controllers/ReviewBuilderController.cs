@@ -16,6 +16,8 @@ using DocumentFormat.OpenXml.Packaging;
 using System.Xml.Linq;
 using ReviewBuilder.Excel;
 using ReviewBuilder;
+using System.ComponentModel;
+using System.Threading;
 
 namespace ReviewBuilder.Controllers
 {
@@ -47,7 +49,7 @@ namespace ReviewBuilder.Controllers
 
             string path = "./wwwroot/Files/";
             string id = GetToken();
-            Program.UsersData.TryAdd(id, new UserData());
+            ApplicationContext.UsersData.TryAdd(id, new UserData());
             string newPath = path + id + "/";
             Directory.CreateDirectory(path + id);
             using (var ms = new MemoryStream())
@@ -58,9 +60,17 @@ namespace ReviewBuilder.Controllers
 
                 if (!CheckFileStruct(ms))
                     return BadRequest(new { Message = "Bad File " + files.FileName });
-                ms.CopyTo(Program.UsersData[id].inputFile);
+                ms.CopyTo(ApplicationContext.UsersData[id].inputFile);
             }
-            
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += (object sender, DoWorkEventArgs arg) =>
+            {
+                ReviewFieldController.Build(id);
+            };
+            worker.RunWorkerCompleted +=
+                (object sender, RunWorkerCompletedEventArgs arg) =>
+                    { ApplicationContext.UsersData[id].isReady = true; };
+            worker.RunWorkerAsync();
             //_context.SaveChanges();
 
             return Ok(new { Id = id });
@@ -70,7 +80,7 @@ namespace ReviewBuilder.Controllers
             Random r = new Random();
             StringBuilder sb = new StringBuilder();
             string id = r.Next(1000000, 9999999).ToString("X");
-            while (Program.UsersData.ContainsKey(id))
+            while (ApplicationContext.UsersData.ContainsKey(id))
                 id = r.Next(1000000, 9999999).ToString("X");
             // _context.UserModel.Add(new User() { id = id });
             // _context.SaveChangesAsync();
@@ -79,32 +89,23 @@ namespace ReviewBuilder.Controllers
         [HttpGet("IsReady/{id}")]
         public ActionResult<bool> IsReady(string id)
         {
-            if (!Program.UsersData.ContainsKey(id))
+            if (!ApplicationContext.UsersData.ContainsKey(id))
                 return NotFound();
-            return Ok(new { isReady = Program.UsersData[id].isReady });
+            return Ok(new { isReady = ApplicationContext.UsersData[id].isReady });
         }
 
         [HttpGet("GetFiles/{id}")]
-        public async Task<IActionResult> GetFiles(int id)
+        public IActionResult GetFiles(string id)
         {
-
-            // if (_context.UserModel.Find(id) == null ||
-            //  _context.UserModel.Find(id).builded == false)
-            //     return NotFound(new { Error = "File not found" });
-            // string path = "./wwwroot/Files/" + id;
-            // if (System.IO.File.Exists(path + "/zipped.zip"))
-            //     System.IO.File.Delete(path + "/zipped.zip");
-            // ZipFile.CreateFromDirectory(path + "/Generated/", path + "/zipped.zip",
-            //     CompressionLevel.Optimal, false);
-            // var memory = new MemoryStream();
-            // path += "/zipped.zip";
-            // using (var stream = new FileStream(path, FileMode.Open))
-            // {
-            //     await stream.CopyToAsync(memory);
-            // }
-            // memory.Position = 0;
-            // return File(memory, GetContentType(path), Path.GetFileName(path));
-            return null;
+            if (ApplicationContext.UsersData.ContainsKey(id) &&
+                ApplicationContext.UsersData[id].isReady)
+            {
+                ApplicationContext.UsersData[id].outputFile.Position = 0;
+                return File(
+                    ApplicationContext.UsersData[id].outputFile,
+                    "file.zip", id + ".zip");
+            }
+            return NotFound(new { Error = "File not found" });
         }
 
         private string GetContentType(string path)
@@ -123,7 +124,7 @@ namespace ReviewBuilder.Controllers
                 {".doc", "application/vnd.ms-word"},
                 {".docx", "application/vnd.ms-word"},
                 {".xls", "application/vnd.ms-excel"},
-                {".xlsx", "application/vnd.openxmlformats.officedocument.spreadsheetml.sheet"},
+                //{".xlsx", "application/vnd.openxmlformats.officedocument.spreadsheetml.sheet"},
                 {".png", "image/png"},
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
@@ -132,25 +133,13 @@ namespace ReviewBuilder.Controllers
                 {".zip","application/zip"}
             };
         }
-        [HttpGet("BuildFiles/{id}")]
-        public async Task<IActionResult> BuildFiles(int id)
-        {
-            return Ok();
-        }
         private bool CheckFileFormat(string filePath)
         {
             return Path.GetExtension(filePath).ToLowerInvariant() == ".xlsx";
         }
         private bool CheckFileStruct(Stream stream)
         {
-            var q = XElement.Load("TemplateStruct.xml");
-            Dictionary<string, string> checkCellList = new Dictionary<string, string>();
-            foreach (var e in q.Elements("STR"))
-            {
-                var addr = (string)e.Attribute("address").Value;
-                var val = (string)e.Value;
-                checkCellList.Add(addr, val);
-            }
+
             SpreadsheetDocument ssd = SpreadsheetDocument.Open(stream, true);
             WorkbookPart workbookPart = ssd.WorkbookPart;
             WorksheetPart worksheetPart = workbookPart.WorksheetParts.FirstOrDefault();
@@ -160,7 +149,7 @@ namespace ReviewBuilder.Controllers
             SheetData sheetData = worksheetPart.Worksheet.Descendants<SheetData>().FirstOrDefault();
             SharedStringTablePart sharedStringPart = workbookPart.SharedStringTablePart;
             Row r = ExcelUtils.GetRow(sheetData, 1);
-            foreach (var el in checkCellList)
+            foreach (var el in ApplicationContext.checkCellList)
             {
                 var strId = Convert.ToString(ExcelUtils.FindStringId(sharedStringPart, el.Value));
                 var cl = ExcelUtils.GetCell(r, el.Key);

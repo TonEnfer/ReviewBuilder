@@ -15,7 +15,7 @@
     <PackageReference Include="TemplateEngine.Docx" Version="1.1.5" />
   </ItemGroup>
   <ItemGroup>
-  <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.1" />
+  <!-- <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.1.1" /> -->
 </ItemGroup>
 
 </Project>
