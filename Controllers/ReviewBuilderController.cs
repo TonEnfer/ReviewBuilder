@@ -110,9 +110,9 @@ namespace ReviewBuilder.Controllers
                 MemoryStream ms = new MemoryStream();
                 ApplicationContext.UsersData[id].outputFile.CopyTo(ms);
                 ms.Position = 0;
-                if (ApplicationContext.UsersData[id].downloadedTime == null)
+                if (ApplicationContext.UsersData[id].downloadedTime == new DateTime())
                 {
-                    ApplicationContext.UsersData[id].downloadedTime = new DateTime();
+                    //ApplicationContext.UsersData[id].downloadedTime = new DateTime();
                     ApplicationContext.UsersData[id].downloadedTime = DateTime.Now;
                 }
                 return File(ms, GetContentType("file.zip"), id + ".zip");

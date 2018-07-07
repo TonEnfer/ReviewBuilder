@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using ReviewBuilder.Models;
+using ReviewBuilder.Controllers;
+using System.Threading;
 
 namespace ReviewBuilder
 {
@@ -28,6 +30,15 @@ namespace ReviewBuilder
                 var val = (string)e.Value;
                 ApplicationContext.checkCellList.Add(addr, val);
             }
+            var t = Task.Run(() =>
+            {
+                while (true)
+                {
+                    DataManagementController.ManageData();
+                    Thread.Sleep(10000);
+                }
+            });
+
 
             CreateWebHostBuilder(args).Build().Run();
         }
