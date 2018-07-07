@@ -28,7 +28,7 @@ namespace ReviewBuilder
             {
                 var addr = (string)e.Attribute("address").Value;
                 var val = (string)e.Value;
-                ApplicationContext.checkCellList.Add(addr, val);
+                ApplicationContext.checkCellList.TryAdd(addr, val);
             }
             var t = Task.Run(() =>
             {
