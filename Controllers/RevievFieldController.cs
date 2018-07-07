@@ -67,6 +67,7 @@ namespace ReviewBuilder.Controllers
                 rf.EvaluatonsSet = GetRandomEvaluationsSet(rf.Evaluation);
                 rfs.Add(rf);
             }
+            ssd.Close();
             return rfs;
         }
         private static List<Evaluations> GetRandomEvaluationsSet(uint Evaluation)
@@ -126,34 +127,39 @@ namespace ReviewBuilder.Controllers
         private static MemoryStream FieldTemplate(ReviewFields rf)
         {
             MemoryStream outStream = new MemoryStream();
-            outStream.Position = 0;
-            ApplicationContext.templateFile.Position = 0;
-            ApplicationContext.templateFile.CopyTo(outStream);
-            var valueToFill = new Content(
-                new FieldContent("Discipline", rf.Discipline),
-                new FieldContent("Theme", rf.Theme),
-                new FieldContent("StudentName", rf.StudentName),
-                new FieldContent("StudentGroup", rf.StudentGroup),
-                new FieldContent("ChiefName", rf.ChiefName)
-            );
-            for (int i = 0; i < rf.EvaluatonsSet.Count; i++)
             {
-                valueToFill.Fields.Add(
-                    new FieldContent("High" + (i + 1), rf.EvaluatonsSet[i].High ? "+" : "-"));
-                valueToFill.Fields.Add(
-                    new FieldContent("Medium" + (i + 1), rf.EvaluatonsSet[i].Medium ? "+" : "-"));
-                valueToFill.Fields.Add(
-                    new FieldContent("Low" + (i + 1), rf.EvaluatonsSet[i].Low ? "+" : "-"));
-            }
+                outStream.Position = 0;
+                lock (ApplicationContext.templateFile)
+                {
+                    ApplicationContext.templateFile.Position = 0;
+                    ApplicationContext.templateFile.CopyTo(outStream);
+                }
+                var valueToFill = new Content(
+                    new FieldContent("Discipline", rf.Discipline),
+                    new FieldContent("Theme", rf.Theme),
+                    new FieldContent("StudentName", rf.StudentName),
+                    new FieldContent("StudentGroup", rf.StudentGroup),
+                    new FieldContent("ChiefName", rf.ChiefName)
+                );
+                for (int i = 0; i < rf.EvaluatonsSet.Count; i++)
+                {
+                    valueToFill.Fields.Add(
+                        new FieldContent("High" + (i + 1), rf.EvaluatonsSet[i].High ? "+" : "-"));
+                    valueToFill.Fields.Add(
+                        new FieldContent("Medium" + (i + 1), rf.EvaluatonsSet[i].Medium ? "+" : "-"));
+                    valueToFill.Fields.Add(
+                        new FieldContent("Low" + (i + 1), rf.EvaluatonsSet[i].Low ? "+" : "-"));
+                }
 
-            using (TemplateProcessor tp = new TemplateProcessor(outStream)
-                                                .SetRemoveContentControls(true))
-            {
-                tp.FillContent(valueToFill);
-                tp.SaveChanges();
-            }
+                using (TemplateProcessor tp = new TemplateProcessor(outStream)
+                                                    .SetRemoveContentControls(true))
+                {
+                    tp.FillContent(valueToFill);
+                    tp.SaveChanges();
+                }
 
-            return outStream;
+                return outStream;
+            }
         }
     }
 }
