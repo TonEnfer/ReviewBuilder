@@ -1,25 +1,38 @@
-
 function showAlert(name) {
+    switch (name) {
+        case 'ready':
+            $("#readyAlert").collapse('show');
+            $("#errorAlert").collapse('hide');
+            $("#processingAlert").collapse('hide');
+            $("#incorrectFileAlert").collapse('hide');
+            break;
+        case 'error':
+            $("#readyAlert").collapse('hide');
+            $("#errorAlert").collapse('show');
+            $("#processingAlert").collapse('hide');
+            $("#incorrectFileAlert").collapse('hide');
+            break;
+        case 'processing':
+            $("#readyAlert").collapse('hide');
+            $("#errorAlert").collapse('hide');
+            $("#processingAlert").collapse('show');
+            $("#incorrectFileAlert").collapse('hide');
+            break;
+        case 'incorrectFile':
+            $("#readyAlert").collapse('hide');
+            $("#errorAlert").collapse('hide');
+            $("#processingAlert").collapse('hide');
+            $("#incorrectFileAlert").collapse('show');
+            break;
+    }
+}
+
+function hideAlerts() {
     $("#readyAlert").collapse('hide');
     $("#errorAlert").collapse('hide');
     $("#processingAlert").collapse('hide');
     $("#incorrectFileAlert").collapse('hide');
-
-    switch (name) {
-        case 'ready':
-            $("#readyAlert").collapse('show');
-            break;
-        case 'error':
-            $("#errorAlert").collapse('show');
-            break;
-        case 'processing':
-            $("#processingAlert").collapse('show');
-            break;
-        case 'incorrectFile':
-            $("#incorrectFileAlert").collapse('show');
-            break;
-    }
-    return false;
+    console.log("Hiding all alerts");
 }
 
 var timerId = undefined;
@@ -29,9 +42,9 @@ var tokenId = undefined;
 function showModal(token) {
     $("#acquiredToken").text(token);
     tokenId = token;
-    console.log("Новый токен пришел: "  + tokenId);
+    console.log("Новый токен пришел: " + tokenId);
     $("#modalReadyAlert").collapse('hide');
-    $("#loadSuccessModal").modal('show');
+    $("#loadSuccessModal").modal();
 }
 
 $("#loadSuccessModal").on('shown.bs.modal', function () {
@@ -43,7 +56,7 @@ $("#loadSuccessModal").on('hidden.bs.modal', function () {
 });
 
 function checkReadyModal() {
-    if(tokenId === undefined){
+    if (tokenId === undefined) {
         console.log("Something went wrong. Token id is not defined");
         return;
     }
@@ -54,19 +67,21 @@ function checkReadyModal() {
     ).done(function (data) {
         console.log(JSON.stringify(data));
         if (data.isReady) {
-            $("#modalDownloadLink").prop('href', "api/ReviewBuilder/GetFiles/" + tokenId);;
+            let dLink = "api/ReviewBuilder/GetFiles/" + tokenId;
+            console.log('Data is ready, showing link ' + dLink)
+            
+            $("#modalDownloadLink").prop('href', dLink);;
             $("#modalReadyAlert").collapse('show');
             stopWaitingTimer();
             return;
         }
-        showAlert('processing');
     }
-    ).fail(function () { showAlert('error'); stopWatchingTimer(); $("#loadSuccessMoadl").modal('hide'); }); 
+    ).fail(function () { showAlert('error'); stopWatchingTimer(); $("#loadSuccessModal").modal('hide'); });
 }
 
 function startWaitingTimer() {
     if (timerId === undefined) {
-        timerId = setInterval(checkReadyModal, 1000);
+        timerId = setInterval(checkReadyModal, 3000);
         console.log("Starting timer " + timerId);
         return;
     }

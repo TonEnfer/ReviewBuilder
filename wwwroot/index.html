@@ -51,21 +51,26 @@
                             <button type="submit" class="input-group-text">Отправить</button>
                         </div>
                     </div>
-                    <div class="alert alert-primary my-3 fade collapse" role="alert" id="processingAlert">
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col" id="pageAlertsPlace">
+                    <div class="alert alert-primary my-3 fade collapse" data-toggle="false" role="alert" id="processingAlert">
                         <strong>Файл в обработке </strong>
                     </div>
-                    <div class="alert alert-success my-3 fade collapse" role="alert" id="readyAlert">
+                    <div class="alert alert-success my-3 fade collapse" data-toggle="false" role="alert" id="readyAlert">
                         <strong>Файл готов к скачиванию.
                             <a id="downloadLink" class="alert-link" href="">Перейти</a>
                         </strong>
                     </div>
-                    <div class="alert alert-warning my-3 fade collapse" role="alert" id="errorAlert">
+                    <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="errorAlert">
                         <strong>Ошибка. Такой токен не найден. Проверьте правильность введенного токена, либо загрузите файл заново
                             и получите новый.</strong>
                     </div>
-                    <div class="alert alert-warning my-3 fade collapse" role="alert" id="incorrectFileAlert">
+                    <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="incorrectFileAlert">
                         <strong>Ошибка файла. Файл неправильного типа или вообще не очень. Проверьте файл и повторите ещё разок.</strong>
                     </div>
+
                 </div>
             </div>
         </form>
@@ -107,7 +112,7 @@
                     <p>Обработка не должна занять долгое время и файл скоро появится.</p>
                     <p>Если файл не появляется, возьмите токен и введите его.</p>
                 </div>
-                <div class="alert alert-success my-3 fade collapse" role="alert" id="modalReadyAlert">
+                <div class="alert alert-success my-3 fade collapse" data-toggle="false" role="alert" id="modalReadyAlert">
                     <strong>Файл готов к скачиванию.
                         <a id="modalDownloadLink" class="alert-link" href="">Перейти</a>
                     </strong>
