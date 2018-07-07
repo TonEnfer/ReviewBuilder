@@ -28,14 +28,17 @@ var tokenId = undefined;
 
 function showModal(token) {
     $("#acquiredToken").text(token);
-    $("#loadSuccessModal").modal('show');
     tokenId = token;
+    console.log("Новый токен пришел: "  + tokenId);
+    $("#modalReadyAlert").collapse('hide');
+    $("#loadSuccessModal").modal('show');
 }
 
 $("#loadSuccessModal").on('shown.bs.modal', function () {
     startWaitingTimer();
 });
 $("#loadSuccessModal").on('hidden.bs.modal', function () {
+    tokenId = undefined;
     stopWaitingTimer();
 });
 
