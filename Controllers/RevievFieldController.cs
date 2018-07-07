@@ -19,16 +19,21 @@ namespace ReviewBuilder.Controllers
         {
             ApplicationContext.UsersData[id].reviewFields =
                 ParceInputFile(ApplicationContext.UsersData[id].inputFile);
-            ZipArchive arh = new ZipArchive(
-                ApplicationContext.UsersData[id].outputFile, ZipArchiveMode.Update);
-            foreach (var rf in ApplicationContext.UsersData[id].reviewFields)
+            using (ZipArchive arh = new ZipArchive(
+                ApplicationContext.UsersData[id].outputFile, ZipArchiveMode.Update, true))
             {
-                ZipArchiveEntry archEntry =
-                arh.CreateEntry(rf.StudentName.Split(' ')[0] + " " +
-                rf.StudentGroup + ".docx", CompressionLevel.Optimal);
-                using (Stream st = archEntry.Open())
+                foreach (var rf in ApplicationContext.UsersData[id].reviewFields)
                 {
-                    FieldTemplate(rf).CopyTo(st);
+                    ZipArchiveEntry archEntry =
+                    arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
+                    rf.StudentGroup + ".docx", CompressionLevel.Optimal);
+                    using (Stream st = archEntry.Open())
+                    {
+                        st.Position = 0;
+                        var q = FieldTemplate(rf);
+                        q.Position = 0;
+                        q.CopyTo(st);
+                    }
                 }
             }
         }
@@ -60,6 +65,7 @@ namespace ReviewBuilder.Controllers
                 else
                     rf.Evaluation = 0;
                 rf.EvaluatonsSet = GetRandomEvaluationsSet(rf.Evaluation);
+                rfs.Add(rf);
             }
             return rfs;
         }
@@ -70,7 +76,7 @@ namespace ReviewBuilder.Controllers
 
             do
                 seq = GetSequence(11);
-            while (seq.Sum() / ReviewFields.EvaluationsCount < 0.75);
+            while ((double)seq.Sum() / (double)ReviewFields.EvaluationsCount < 0.5);
             switch (Evaluation)
             {
                 case 3:
@@ -78,7 +84,7 @@ namespace ReviewBuilder.Controllers
                     {
                         Evaluations ev = new Evaluations();
                         ev.Low = Convert.ToBoolean(e);
-                        ev.Medium = ev.Low == false ? Convert.ToBoolean(_random.Next(0, 1)) : false;
+                        ev.Medium = ev.Low == false ? Convert.ToBoolean(_random.Next(0, 100) % 2) : false;
                         ev.High = !(ev.Low | ev.Medium);
                         evs.Add(ev);
                     }
@@ -112,11 +118,16 @@ namespace ReviewBuilder.Controllers
 
         private static IEnumerable<int> GetSequence(int size)
         {
-            return Enumerable.Range(_random.Next(0, 1), size);
+            List<int> q = new List<int>();
+            for (int i = 0; i < size; i++)
+                q.Add(_random.Next(0, 100) % 2);
+            return q;
         }
         private static MemoryStream FieldTemplate(ReviewFields rf)
         {
             MemoryStream outStream = new MemoryStream();
+            outStream.Position = 0;
+            ApplicationContext.templateFile.Position = 0;
             ApplicationContext.templateFile.CopyTo(outStream);
             var valueToFill = new Content(
                 new FieldContent("Discipline", rf.Discipline),
@@ -128,11 +139,11 @@ namespace ReviewBuilder.Controllers
             for (int i = 0; i < rf.EvaluatonsSet.Count; i++)
             {
                 valueToFill.Fields.Add(
-                    new FieldContent("High" + i, rf.EvaluatonsSet[i].High ? "+" : "-"));
+                    new FieldContent("High" + (i + 1), rf.EvaluatonsSet[i].High ? "+" : "-"));
                 valueToFill.Fields.Add(
-                    new FieldContent("Medium" + i, rf.EvaluatonsSet[i].Medium ? "+" : "-"));
+                    new FieldContent("Medium" + (i + 1), rf.EvaluatonsSet[i].Medium ? "+" : "-"));
                 valueToFill.Fields.Add(
-                    new FieldContent("Low" + i, rf.EvaluatonsSet[i].Low ? "+" : "-"));
+                    new FieldContent("Low" + (i + 1), rf.EvaluatonsSet[i].Low ? "+" : "-"));
             }
 
             using (TemplateProcessor tp = new TemplateProcessor(outStream)

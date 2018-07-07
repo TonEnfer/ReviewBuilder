@@ -54,12 +54,15 @@ namespace ReviewBuilder.Controllers
             Directory.CreateDirectory(path + id);
             using (var ms = new MemoryStream())
             {
+                ms.Position = 0;
                 files.CopyTo(ms);
                 if (!CheckFileFormat(files.FileName))
                     return BadRequest(new { Message = "Bad File " + files.FileName });
 
                 if (!CheckFileStruct(ms))
                     return BadRequest(new { Message = "Bad File " + files.FileName });
+                ms.Position = 0;
+                ApplicationContext.UsersData[id].inputFile.Position = 0;
                 ms.CopyTo(ApplicationContext.UsersData[id].inputFile);
             }
             BackgroundWorker worker = new BackgroundWorker();
@@ -69,7 +72,10 @@ namespace ReviewBuilder.Controllers
             };
             worker.RunWorkerCompleted +=
                 (object sender, RunWorkerCompletedEventArgs arg) =>
-                    { ApplicationContext.UsersData[id].isReady = true; };
+                    {
+                        ApplicationContext.UsersData[id].isReady = true;
+                        Console.WriteLine("\r\nFile {0} builded \r\n", id);
+                    };
             worker.RunWorkerAsync();
             //_context.SaveChanges();
 
@@ -101,9 +107,15 @@ namespace ReviewBuilder.Controllers
                 ApplicationContext.UsersData[id].isReady)
             {
                 ApplicationContext.UsersData[id].outputFile.Position = 0;
-                return File(
-                    ApplicationContext.UsersData[id].outputFile,
-                    "file.zip", id + ".zip");
+                MemoryStream ms = new MemoryStream();
+                ApplicationContext.UsersData[id].outputFile.CopyTo(ms);
+                ms.Position = 0;
+                if (ApplicationContext.UsersData[id].downloadedTime == null)
+                {
+                    ApplicationContext.UsersData[id].downloadedTime = new DateTime();
+                    ApplicationContext.UsersData[id].downloadedTime = DateTime.Now;
+                }
+                return File(ms, GetContentType("file.zip"), id + ".zip");
             }
             return NotFound(new { Error = "File not found" });
         }

@@ -22,7 +22,7 @@ namespace ReviewBuilder.Models
             isFailed = false;
             inputFile = new MemoryStream();
             outputFile = new MemoryStream();
-            downloadedTime = new DateTime();
+            //downloadedTime = new DateTime();
         }
 
 

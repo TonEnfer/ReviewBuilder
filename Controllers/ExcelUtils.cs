@@ -69,7 +69,7 @@ namespace ReviewBuilder.Excel
                 return "0";
             if (c.CellValue == null)
                 return "0";
-            if (c.DataType == "S")
+            if (c.DataType == "s")
                 return FindStringValue(sst,Convert.ToInt32(c.CellValue.Text));
             return c.CellValue.Text;
         }
