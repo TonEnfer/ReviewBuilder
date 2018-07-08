@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru-ru">
 
 <head>
     <meta charset="utf-8">
@@ -9,6 +9,7 @@
         crossorigin="anonymous">
 
     <link href="style.css" rel="stylesheet">
+    <title>Авторецензент v1.0</title>
 </head>
 
 <body>
@@ -22,11 +23,11 @@
                 <div class="col">
                     <div class="input-group">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input form-control" name="files" id="files">
-                            <label class="custom-file-label">Загрузите файл с данными о работах</label>
+                            <input type="file" class="form-contol-file custom-file-input" name="files" id="files" required>
+                            <label class="custom-file-label" for="files">Загрузите файл</label>
                         </div>
                         <div class="input-group-append">
-                            <button type="submit" class="input-group-text">Отправить</button>
+                            <button type="submit" class="btn input-group-text">Отправить</button>
                         </div>
                     </div>
                 </div>
@@ -43,37 +44,34 @@
             <div class="row my-3">
                 <div class="col">
                     <div class="input-group">
+                        <input type="text" class="form-control" name="inputToken" id="inputToken" placeholder="Введите токен" required>
                         <div class="input-group-append">
-                            <span class="input-group-text">Введите токен, выданный ранее</span>
-                        </div>
-                        <input type="text" class="form-control form-control-lg" name="inputToken" id="inputToken" placeholder="16598ab5615fdx" required>
-                        <div class="input-group-append">
-                            <button type="submit" class="input-group-text">Отправить</button>
+                            <button type="submit" class="input-group-text">Проверить</button>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row my-3">
-                <div class="col" id="pageAlertsPlace">
-                    <div class="alert alert-primary my-3 fade collapse" data-toggle="false" role="alert" id="processingAlert">
-                        <strong>Файл в обработке </strong>
-                    </div>
-                    <div class="alert alert-success my-3 fade collapse" data-toggle="false" role="alert" id="readyAlert">
-                        <strong>Файл готов к скачиванию.
-                            <a id="downloadLink" class="alert-link" href="">Перейти</a>
-                        </strong>
-                    </div>
-                    <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="errorAlert">
-                        <strong>Ошибка. Такой токен не найден. Проверьте правильность введенного токена, либо загрузите файл заново
-                            и получите новый.</strong>
-                    </div>
-                    <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="incorrectFileAlert">
-                        <strong>Ошибка файла. Файл неправильного типа или вообще не очень. Проверьте файл и повторите ещё разок.</strong>
-                    </div>
-
                 </div>
             </div>
         </form>
+        <div class="row my-3">
+            <div class="col" id="pageAlertsPlace">
+                <div class="alert alert-primary my-3 fade collapse" data-toggle="false" role="alert" id="processingAlert">
+                    <strong>Файл в обработке </strong>
+                </div>
+                <div class="alert alert-success my-3 fade collapse" data-toggle="false" role="alert" id="readyAlert">
+                    <strong>Файл готов к скачиванию.
+                        <a id="downloadLink" class="alert-link" href="">Перейти</a>
+                    </strong>
+                </div>
+                <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="errorAlert">
+                    <strong>Ошибка. Такой токен не найден. Проверьте правильность введенного токена, либо загрузите файл заново и
+                        получите новый.</strong>
+                </div>
+                <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="incorrectFileAlert">
+                    <strong>Ошибка файла. Файл неправильного типа или вообще не очень. Проверьте файл и повторите ещё разок.</strong>
+                </div>
+
+            </div>
+        </div>
         <div class="row my-5">
             <div class="col my-5">
                 <div class="media">
@@ -83,7 +81,8 @@
                     <div class="media-body">
                         <h5> Да, кстати, вот шаблон файла
                         </h5>
-                        <p>Вы можете <a href="template.xlsx">скачать</a> его и пользоваться наздоровье.</p>
+                        <p>Вы можете
+                            <a href="template.xlsx">скачать</a> его и пользоваться на здоровье.</p>
                         <p>Файлы иного формата не принимаются</p>
 
                     </div>
@@ -103,7 +102,7 @@
 
                 <div class="modal-body">
                     <p>Ваш файл загружен и теперь обрабатывается.</p>
-                    <p>Вы можете подаждать архив с рецензиями здесь, а можете взять вот этот токен и ввести его на страницу
+                    <p>Вы можете подождать архив с рецензиями здесь, а можете взять вот этот токен и ввести его на страницу
                         позже.
                     </p>
                     <h1 class="text-center">

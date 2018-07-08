@@ -1,32 +1,11 @@
+// basic function to show a particular type of alert on base page
 function showAlert(name) {
-    switch (name) {
-        case 'ready':
-            $("#readyAlert").collapse('show');
-            $("#errorAlert").collapse('hide');
-            $("#processingAlert").collapse('hide');
-            $("#incorrectFileAlert").collapse('hide');
-            break;
-        case 'error':
-            $("#readyAlert").collapse('hide');
-            $("#errorAlert").collapse('show');
-            $("#processingAlert").collapse('hide');
-            $("#incorrectFileAlert").collapse('hide');
-            break;
-        case 'processing':
-            $("#readyAlert").collapse('hide');
-            $("#errorAlert").collapse('hide');
-            $("#processingAlert").collapse('show');
-            $("#incorrectFileAlert").collapse('hide');
-            break;
-        case 'incorrectFile':
-            $("#readyAlert").collapse('hide');
-            $("#errorAlert").collapse('hide');
-            $("#processingAlert").collapse('hide');
-            $("#incorrectFileAlert").collapse('show');
-            break;
-    }
+    $("#readyAlert").collapse((name === 'ready' ? 'show' : 'hide'));
+    $("#errorAlert").collapse((name === 'error' ? 'show' : 'hide'));
+    $("#processingAlert").collapse((name === 'processing' ? 'show' : 'hide'));
+    $("#incorrectFileAlert").collapse((name === 'incorrectFile' ? 'show' : 'hide'));
 }
-
+//function to hide all alerts
 function hideAlerts() {
     $("#readyAlert").collapse('hide');
     $("#errorAlert").collapse('hide');
@@ -35,9 +14,48 @@ function hideAlerts() {
     console.log("Hiding all alerts");
 }
 
-var timerId = undefined;
+function showDownloadAlerts(link) {
+    updateDownloadLinks(link);
+    showAlert('ready');
+    $("#modalReadyAlert").collapse('show');
+}
 
+function updateDownloadLinks(link) {
+    $("#downloadLink").prop('href', link);
+    $("#modalDownloadLink").prop('href', link);;
+}
+
+function requestStatusFromServer(val) {
+    $.ajax("api/ReviewBuilder/IsReady/" + val, {
+        method: 'GET',
+        dataType: 'json'
+    }
+    ).done(function (data) {
+        if (data.isReady) {
+            showDownloadAlerts("api/ReviewBuilder/GetFiles/" + val);
+            return;
+        }
+        showAlert('processing');
+    }
+    ).fail(function () { showAlert('error'); });
+}
+
+
+// **** MODAL window part **** //
+
+// timer for modal window
+var timerId = undefined;
+// global tokenId for modal window
 var tokenId = undefined;
+
+$("#loadSuccessModal").on('shown.bs.modal', function () {
+    startWaitingTimer();
+});
+
+$("#loadSuccessModal").on('hidden.bs.modal', function () {
+    tokenId = undefined;
+    stopWaitingTimer();
+});
 
 function showModal(token) {
     $("#acquiredToken").text(token);
@@ -47,13 +65,7 @@ function showModal(token) {
     $("#loadSuccessModal").modal();
 }
 
-$("#loadSuccessModal").on('shown.bs.modal', function () {
-    startWaitingTimer();
-});
-$("#loadSuccessModal").on('hidden.bs.modal', function () {
-    tokenId = undefined;
-    stopWaitingTimer();
-});
+
 
 function checkReadyModal() {
     if (tokenId === undefined) {
@@ -65,23 +77,24 @@ function checkReadyModal() {
         dataType: 'json'
     }
     ).done(function (data) {
-        console.log(JSON.stringify(data));
         if (data.isReady) {
             let dLink = "api/ReviewBuilder/GetFiles/" + tokenId;
             console.log('Data is ready, showing link ' + dLink)
-            
-            $("#modalDownloadLink").prop('href', dLink);;
-            $("#modalReadyAlert").collapse('show');
+            showDownloadAlerts(dLink);
             stopWaitingTimer();
             return;
         }
+        console.log("file is not yet ready");
     }
-    ).fail(function () { showAlert('error'); stopWatchingTimer(); $("#loadSuccessModal").modal('hide'); });
+    ).fail(function () {
+        console.log("fatal error occurred");
+        showAlert('error'); stopWatchingTimer(); $("#loadSuccessModal").modal('hide');
+    });
 }
 
 function startWaitingTimer() {
     if (timerId === undefined) {
-        timerId = setInterval(checkReadyModal, 3000);
+        timerId = setInterval(checkReadyModal, 4000);
         console.log("Starting timer " + timerId);
         return;
     }
@@ -92,24 +105,11 @@ function stopWaitingTimer() {
         clearInterval(timerId);
         timerId = undefined;
         console.log("Timer stopped ...");
+        return;
     }
     console.log("No timer to stop...");
 }
 
-function requestStatusFromServer(val) {
-    $.ajax("api/ReviewBuilder/IsReady/" + val, {
-        method: 'GET',
-        dataType: 'json'
-    }
-    ).done(function (data) {
-        if (data.isReady) {
-            $("#downloadLink").prop('href', "api/ReviewBuilder/GetFiles/" + val); showAlert('ready');
-            return;
-        }
-        showAlert('processing');
-    }
-    ).fail(function () { showAlert('error'); });
-}
 
 $("#fileSubmitForm").on('submit', function (ev) {
     ev.preventDefault();
