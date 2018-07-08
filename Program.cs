@@ -19,11 +19,13 @@ namespace ReviewBuilder
     {
         public static void Main(string[] args)
         {
-            using (var file = new FileStream("Template.docx", FileMode.Open))
+            Console.WriteLine("Load Template.docx from {0}",Environment.CurrentDirectory);
+            using (var file = new FileStream(Environment.CurrentDirectory+"/Template.docx", FileMode.Open))
             {
                 file.CopyTo(ApplicationContext.templateFile);
             }
-            var q = XElement.Load("TemplateStruct.xml");
+            Console.WriteLine("Load TemplateStruct.xml from {0}",Environment.CurrentDirectory);
+            var q = XElement.Load(Environment.CurrentDirectory+"/TemplateStruct.xml");
             foreach (var e in q.Elements("STR"))
             {
                 var addr = (string)e.Attribute("address").Value;
