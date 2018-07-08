@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ReviewBuilder.Excel
 {
@@ -14,8 +15,6 @@ namespace ReviewBuilder.Excel
         public static int FindStringId(SharedStringTablePart sharedStrings, string value)
         {
             int markerId = -100;
-            //sharedStrings.SharedStringTable.ChildElements.ToList().IndexOf(
-            //    sharedStrings.SharedStringTable.ChildElements.Where(k => k.InnerText == value).FirstOrDefault());
             if (sharedStrings != null)
                 for (int i = 0; i < sharedStrings.SharedStringTable.ChildElements.Count; i++)
                 {
