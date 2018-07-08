@@ -28,9 +28,7 @@ namespace ReviewBuilder.Controllers
 
         public ReviewBuilderController()
         {
-            // _context = context;
-            //  if(_context.UserModel.Count() != 0)
-            //      _context.UserModel.Add(new User{id = "000000"});
+            
         }
         [HttpPost("UploadFiles")]
         public IActionResult UploadFiles(IFormFile files)
@@ -38,20 +36,22 @@ namespace ReviewBuilder.Controllers
 
             if (files == null)
             {
-                Console.WriteLine("No file found");
-                return NotFound();
+                Console.WriteLine("Попытка загрузить пустой файл");
+                return BadRequest();
             }
 
             long size = files.Length;
+            
+            if(size > 102400)
+            {
+                Console.WriteLine("Попытка загрузить слишком большой файл");
+                return BadRequest(new {Error = "Файл слишком большой"});
+            }
 
             Console.WriteLine("\r\n!!!!New file {0}, files size: {1}\r\n", files.FileName, size);
 
-
-            string path = "./wwwroot/Files/";
             string id = GetToken();
             ApplicationContext.UsersData.TryAdd(id, new UserData());
-            string newPath = path + id + "/";
-            Directory.CreateDirectory(path + id);
             using (var ms = new MemoryStream())
             {
                 ms.Position = 0;
@@ -77,10 +77,10 @@ namespace ReviewBuilder.Controllers
                         Console.WriteLine("\r\nFile {0} builded \r\n", id);
                     };
             worker.RunWorkerAsync();
-            //_context.SaveChanges();
 
             return Ok(new { Id = id });
         }
+
         public string GetToken()
         {
             Random r = new Random();
@@ -88,10 +88,9 @@ namespace ReviewBuilder.Controllers
             string id = r.Next(1000000, 9999999).ToString("X");
             while (ApplicationContext.UsersData.ContainsKey(id))
                 id = r.Next(1000000, 9999999).ToString("X");
-            // _context.UserModel.Add(new User() { id = id });
-            // _context.SaveChangesAsync();
             return id;
         }
+
         [HttpGet("IsReady/{id}")]
         public ActionResult<bool> IsReady(string id)
         {
@@ -136,7 +135,6 @@ namespace ReviewBuilder.Controllers
                 {".doc", "application/vnd.ms-word"},
                 {".docx", "application/vnd.ms-word"},
                 {".xls", "application/vnd.ms-excel"},
-                //{".xlsx", "application/vnd.openxmlformats.officedocument.spreadsheetml.sheet"},
                 {".png", "image/png"},
                 {".jpg", "image/jpeg"},
                 {".jpeg", "image/jpeg"},
