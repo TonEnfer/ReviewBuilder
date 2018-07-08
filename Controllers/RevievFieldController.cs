@@ -10,6 +10,7 @@ using ReviewBuilder.Models;
 using System.Linq;
 using System.Xml.Linq;
 using System.IO.Compression;
+using System.Threading.Tasks;
 
 namespace ReviewBuilder.Controllers
 {
@@ -22,11 +23,15 @@ namespace ReviewBuilder.Controllers
             using (ZipArchive arh = new ZipArchive(
                 ApplicationContext.UsersData[id].outputFile, ZipArchiveMode.Update, true))
             {
-                foreach (var rf in ApplicationContext.UsersData[id].reviewFields)
+                Parallel.ForEach(ApplicationContext.UsersData[id].reviewFields, (rf) =>
                 {
-                    ZipArchiveEntry archEntry =
-                    arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
+                    ZipArchiveEntry archEntry;
+                    lock (arh)
+                    {
+                        archEntry = arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
                     rf.StudentGroup + ".docx", CompressionLevel.Optimal);
+                    }
+
                     using (Stream st = archEntry.Open())
                     {
                         st.Position = 0;
@@ -34,7 +39,20 @@ namespace ReviewBuilder.Controllers
                         q.Position = 0;
                         q.CopyTo(st);
                     }
-                }
+                });
+                // foreach (var rf in ApplicationContext.UsersData[id].reviewFields)
+                // {
+                //     ZipArchiveEntry archEntry =
+                //     arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
+                //     rf.StudentGroup + ".docx", CompressionLevel.Optimal);
+                //     using (Stream st = archEntry.Open())
+                //     {
+                //         st.Position = 0;
+                //         var q = FieldTemplate(rf);
+                //         q.Position = 0;
+                //         q.CopyTo(st);
+                //     }
+                // }
             }
         }
         private static List<ReviewFields> ParceInputFile(MemoryStream input)
