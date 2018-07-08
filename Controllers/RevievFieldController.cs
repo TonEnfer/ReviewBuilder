@@ -73,10 +73,20 @@ namespace ReviewBuilder.Controllers
                     continue;
                 ReviewFields rf = new ReviewFields();
                 rf.Discipline = ExcelUtils.GetCellText(sharedStringPart, row, "A");
+                if (rf.Discipline == null)
+                    continue;
                 rf.Theme = ExcelUtils.GetCellText(sharedStringPart, row, "B");
+                if (rf.Theme == null)
+                    continue;
                 rf.StudentName = ExcelUtils.GetCellText(sharedStringPart, row, "C");
+                if (rf.StudentName == null)
+                    continue;
                 rf.StudentGroup = ExcelUtils.GetCellText(sharedStringPart, row, "D");
+                if (rf.StudentGroup == null)
+                    continue;
                 rf.ChiefName = ExcelUtils.GetCellText(sharedStringPart, row, "E");
+                if (rf.ChiefName == null)
+                    continue;
                 uint number;
                 if (UInt32.TryParse(ExcelUtils.GetCellText(sharedStringPart, row, "F"), out number))
                     rf.Evaluation = number;
