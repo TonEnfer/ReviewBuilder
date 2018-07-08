@@ -28,7 +28,7 @@ namespace ReviewBuilder.Controllers
 
         public ReviewBuilderController()
         {
-            
+
         }
         [HttpPost("UploadFiles")]
         public IActionResult UploadFiles(IFormFile files)
@@ -41,11 +41,11 @@ namespace ReviewBuilder.Controllers
             }
 
             long size = files.Length;
-            
-            if(size > 102400)
+
+            if (size > 102400)
             {
                 Console.WriteLine("Попытка загрузить слишком большой файл");
-                return BadRequest(new {Error = "Файл слишком большой"});
+                return BadRequest(new { Error = "Файл слишком большой" });
             }
 
             Console.WriteLine("\r\n!!!!New file {0}, files size: {1}\r\n", files.FileName, size);

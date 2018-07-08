@@ -11,6 +11,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace ReviewBuilder.Controllers
 {
@@ -26,39 +27,27 @@ namespace ReviewBuilder.Controllers
                 Parallel.ForEach(ApplicationContext.UsersData[id].reviewFields, (rf) =>
                 {
                     ZipArchiveEntry archEntry;
-                    lock (arh)
                     {
-                        archEntry = arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
-                    rf.StudentGroup + ".docx", CompressionLevel.Optimal);
-                    }
+                        lock (arh)
+                        {
+                            archEntry = arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
+                        rf.StudentGroup + ".docx", CompressionLevel.Optimal);
+                        }
 
-                    using (Stream st = archEntry.Open())
-                    {
-                        st.Position = 0;
-                        var q = FieldTemplate(rf);
-                        q.Position = 0;
-                        q.CopyTo(st);
+                        using (Stream st = archEntry.Open())
+                        {
+                            st.Position = 0;
+                            FieldTemplate(rf).CopyTo(st);
+                        }
                     }
                 });
-                // foreach (var rf in ApplicationContext.UsersData[id].reviewFields)
-                // {
-                //     ZipArchiveEntry archEntry =
-                //     arh.CreateEntry(rf.StudentName.Split(' ')[0] + "_" +
-                //     rf.StudentGroup + ".docx", CompressionLevel.Optimal);
-                //     using (Stream st = archEntry.Open())
-                //     {
-                //         st.Position = 0;
-                //         var q = FieldTemplate(rf);
-                //         q.Position = 0;
-                //         q.CopyTo(st);
-                //     }
-                // }
             }
         }
         private static List<ReviewFields> ParceInputFile(MemoryStream input)
         {
+
             List<ReviewFields> rfs = new List<ReviewFields>();
-            SpreadsheetDocument ssd = SpreadsheetDocument.Open(input, true);
+            SpreadsheetDocument ssd = SpreadsheetDocument.Open(input, false);
             WorkbookPart workbookPart = ssd.WorkbookPart;
             WorksheetPart worksheetPart = workbookPart.WorksheetParts.FirstOrDefault();
             Sheets sheets = workbookPart.Workbook.Sheets;
@@ -66,7 +55,6 @@ namespace ReviewBuilder.Controllers
 
             SheetData sheetData = worksheetPart.Worksheet.Descendants<SheetData>().FirstOrDefault();
             SharedStringTablePart sharedStringPart = workbookPart.SharedStringTablePart;
-
             foreach (var row in sheetData.Elements<Row>())
             {
                 if (row.RowIndex == 1)
@@ -185,7 +173,7 @@ namespace ReviewBuilder.Controllers
                     tp.FillContent(valueToFill);
                     tp.SaveChanges();
                 }
-
+                outStream.Position = 0;
                 return outStream;
             }
         }
