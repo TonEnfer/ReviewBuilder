@@ -36,7 +36,7 @@ namespace ReviewBuilder.Controllers
 
             if (files == null)
             {
-                Console.WriteLine("Попытка загрузить пустой файл");
+                Console.WriteLine("{0}\tПопытка загрузить пустой файл", DateTime.Now);
                 return BadRequest();
             }
 
@@ -44,12 +44,9 @@ namespace ReviewBuilder.Controllers
 
             if (size > 102400)
             {
-                Console.WriteLine("Попытка загрузить слишком большой файл");
+                Console.WriteLine("{0}\tПопытка загрузить слишком большой файл", DateTime.Now);
                 return BadRequest(new { Error = "Файл слишком большой" });
             }
-
-            Console.WriteLine("\r\n!!!!New file {0}, files size: {1}\r\n", files.FileName, size);
-
             string id = GetToken();
             ApplicationContext.UsersData.TryAdd(id, new UserData());
             using (var ms = new MemoryStream())
@@ -58,23 +55,26 @@ namespace ReviewBuilder.Controllers
                 files.CopyTo(ms);
                 if (!CheckFileFormat(files.FileName))
                     return BadRequest(new { Message = "Bad File " + files.FileName });
-
                 if (!CheckFileStruct(ms))
                     return BadRequest(new { Message = "Bad File " + files.FileName });
+                Console.WriteLine("{0}\tNew file {1}, files size: {2}",
+                    DateTime.Now, files.FileName, size);
                 ms.Position = 0;
                 ApplicationContext.UsersData[id].inputFile.Position = 0;
                 ms.CopyTo(ApplicationContext.UsersData[id].inputFile);
             }
+            ApplicationContext.UsersData[id].uploadFile = DateTime.Now;
             BackgroundWorker worker = new BackgroundWorker();
             worker.DoWork += (object sender, DoWorkEventArgs arg) =>
             {
+                Console.WriteLine("{0}\tStart building file {1}", DateTime.Now, id);
                 ReviewFieldController.Build(id);
             };
             worker.RunWorkerCompleted +=
                 (object sender, RunWorkerCompletedEventArgs arg) =>
                     {
                         ApplicationContext.UsersData[id].isReady = true;
-                        Console.WriteLine("\r\nFile {0} builded \r\n", id);
+                        Console.WriteLine("{0}\tFile {1} builded", DateTime.Now, id);
                     };
             worker.RunWorkerAsync();
 
