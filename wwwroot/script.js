@@ -58,7 +58,7 @@ $("#loadSuccessModal").on('hidden.bs.modal', function () {
 });
 
 function showModal(token) {
-    $("#acquiredToken").text(token);
+    $("#acquiredToken").html(token + " <i class='fa fa-cog fa-spin'></i>");
     tokenId = token;
     console.log("Новый токен пришел: " + tokenId);
     $("#modalReadyAlert").collapse('hide');
@@ -114,6 +114,10 @@ function stopWaitingTimer() {
 $("#fileSubmitForm").on('submit', function (ev) {
     ev.preventDefault();
 
+    $("#fileSubmitButton").attr('disabled', 'disabled');
+    $("#fileSubmitButton").html("Отправка <i class='fa fa-circle-o-notch fa-spin'></i>");
+
+
     var data = new FormData();
     data.append("files", $("#files")[0].files[0]);
 
@@ -126,8 +130,17 @@ $("#fileSubmitForm").on('submit', function (ev) {
             method: 'POST',
             dataType: 'json'
         }
-    ).done(function (data) { showAlert('processing'); showModal(data.id); }
-    ).fail(function () { showAlert('incorrectFile'); });
+    ).done(function (data) {
+        showAlert('processing');
+        showModal(data.id);
+        $("#fileSubmitButton").removeAttr('disabled');
+        $("#fileSubmitButton").html("Отправить");
+    }
+    ).fail(function () {
+        showAlert('incorrectFile');
+        $("#fileSubmitButton").removeAttr('disabled');
+        $("#fileSubmitButton").html("Отправить");
+    });
 
 
 });
