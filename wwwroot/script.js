@@ -45,6 +45,7 @@ function requestStatusFromServer(val) {
 
 // timer for modal window
 var timerId = undefined;
+var tickCount = undefined;
 // global tokenId for modal window
 var tokenId = undefined;
 
@@ -58,10 +59,14 @@ $("#loadSuccessModal").on('hidden.bs.modal', function () {
 });
 
 function showModal(token) {
-    $("#acquiredToken").html(token + " <i class='fa fa-cog fa-spin'></i>");
+    $("#acquiredToken").html(token);
     tokenId = token;
     console.log("Новый токен пришел: " + tokenId);
     $("#modalReadyAlert").collapse('hide');
+    $("#fileProcessed").show();
+    $("#tokenDiv").hide();
+    console.log("Hide close button");
+    $(".closeModalButton").hide();
     $("#loadSuccessModal").modal();
 }
 
@@ -69,8 +74,27 @@ function showModal(token) {
 
 function checkReadyModal() {
     if (tokenId === undefined) {
+        tickCount = 0;
         console.log("Something went wrong. Token id is not defined");
+        $("#fileProcessed").show();
+        $("#tokenDiv").hide();
+        $(".closeModalButton").hide();
         return;
+    }
+    tickCount += 1;
+    console.log("tickCount = " + tickCount);
+    if (tickCount > 2) {
+        console.log("Show token...");
+        $("#fileProcessed").hide();
+        $("#tokenDiv").show();
+        console.log("Show close button");
+        $(".closeModalButton").show();
+    }
+    else {
+        $("#fileProcessed").show();
+        $("#tokenDiv").hide();
+        console.log("Hide close button");
+        $(".closeModalButton").hide();
     }
     $.ajax("api/ReviewBuilder/IsReady/" + tokenId, {
         method: 'GET',
@@ -79,8 +103,11 @@ function checkReadyModal() {
     ).done(function (data) {
         if (data.isReady) {
             let dLink = "api/ReviewBuilder/GetFiles/" + tokenId;
-            console.log('Data is ready, showing link ' + dLink)
+            console.log('Data is ready, showing link ' + dLink);
+            console.log("Show close button");
+            $(".closeModalButton").show();
             showDownloadAlerts(dLink);
+
             stopWaitingTimer();
             return;
         }
@@ -95,6 +122,7 @@ function checkReadyModal() {
 function startWaitingTimer() {
     if (timerId === undefined) {
         timerId = setInterval(checkReadyModal, 4000);
+        tickCount = 0;
         console.log("Starting timer " + timerId);
         return;
     }
@@ -104,6 +132,7 @@ function stopWaitingTimer() {
     if (timerId !== undefined) {
         clearInterval(timerId);
         timerId = undefined;
+        tickCount = undefined;
         console.log("Timer stopped ...");
         return;
     }

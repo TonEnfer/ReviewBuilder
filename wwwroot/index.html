@@ -7,40 +7,44 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
         crossorigin="anonymous">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link href="style.css" rel="stylesheet">
     <title>Авторецензент v1.0</title>
-	<!-- Yandex.Metrika counter -->
-	<script type="text/javascript" >
-		(function (d, w, c) {
-			(w[c] = w[c] || []).push(function() {
-				try {
-					w.yaCounter49663309 = new Ya.Metrika2({
-						id:49663309,
-						clickmap:true,
-						trackLinks:true,
-						accurateTrackBounce:true,
-						webvisor:true
-					});
-				} catch(e) { }
-			});
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function (d, w, c) {
+            (w[c] = w[c] || []).push(function () {
+                try {
+                    w.yaCounter49663309 = new Ya.Metrika2({
+                        id: 49663309,
+                        clickmap: true,
+                        trackLinks: true,
+                        accurateTrackBounce: true,
+                        webvisor: true
+                    });
+                } catch (e) { }
+            });
 
-			var n = d.getElementsByTagName("script")[0],
-				s = d.createElement("script"),
-				f = function () { n.parentNode.insertBefore(s, n); };
-			s.type = "text/javascript";
-			s.async = true;
-			s.src = "https://mc.yandex.ru/metrika/tag.js";
+            var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function () { n.parentNode.insertBefore(s, n); };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/tag.js";
 
-			if (w.opera == "[object Opera]") {
-				d.addEventListener("DOMContentLoaded", f, false);
-			} else { f(); }
-		})(document, window, "yandex_metrika_callbacks2");
-	</script>
-	<noscript><div><img src="https://mc.yandex.ru/watch/49663309" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-	<!-- /Yandex.Metrika counter -->
+            if (w.opera == "[object Opera]") {
+                d.addEventListener("DOMContentLoaded", f, false);
+            } else { f(); }
+        })(document, window, "yandex_metrika_callbacks2");
+    </script>
+    <noscript>
+        <div>
+            <img src="https://mc.yandex.ru/watch/49663309" style="position:absolute; left:-9999px;" alt="" />
+        </div>
+    </noscript>
+    <!-- /Yandex.Metrika counter -->
 </head>
 
 <body>
@@ -54,7 +58,8 @@
                 <div class="col">
                     <div class="input-group">
                         <div class="custom-file">
-                            <input type="file" class="form-contol-file custom-file-input" name="files" id="files" onchange="document.getElementById('fileName').innerHTML = (this.files[0].name);" required>
+                            <input type="file" class="form-contol-file custom-file-input" name="files" id="files" onchange="document.getElementById('fileName').innerHTML = (this.files[0].name);"
+                                required>
                             <label class="custom-file-label" for="files" id="fileName">Загрузите файл</label>
                         </div>
                         <div class="input-group-append">
@@ -100,11 +105,12 @@
                 <div class="alert alert-warning my-3 fade collapse" data-toggle="false" role="alert" id="incorrectFileAlert">
                     <strong>Ошибка файла. Файл неправильного типа или вообще не очень. Проверьте файл и повторите ещё разок.</strong>
                 </div>
-				<div class="alert alert-warning alert-dismissible fade show" role="alert" id="changeTemplateAlert">
-                    Внимание, <strong>1/08/2018</strong> шаблон для генерации рецензий изменился. Пожалуйста, скачайте новый шаблон.
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert" id="changeTemplateAlert">
+                    Внимание,
+                    <strong>1/08/2018</strong> шаблон для генерации рецензий изменился. Пожалуйста, скачайте новый шаблон.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
 
             </div>
@@ -131,30 +137,36 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Ожидание файла</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title">
+                        Ожидание файла
+                        <i class='fa fa-cog fa-spin'></i>
+                    </h5>
+                    <button type="button" class="close closeModalButton" data-dismiss="modal" aria-label="Close" style="display: none">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
                 <div class="modal-body">
-                    <p>Ваш файл загружен и теперь обрабатывается.</p>
-                    <p>Вы можете подождать архив с рецензиями здесь, а можете взять вот этот токен и ввести его на страницу
-                        позже.
-                    </p>
-                    <h1 class="text-center">
-                        <strong class="badge badge-success" id="acquiredToken">123ab5651cd685</strong>
-                    </h1>
-                    <p>Обработка не должна занять долгое время и файл скоро появится.</p>
-                    <p>Если файл не появляется, возьмите токен и введите его.</p>
+                    <div id="fileProcessed">
+                        <p>Ваш файл загружен и теперь обрабатывается.</p>
+                        <p>Когда файл будет готов, Вы получите ссылку для его скачивания.</p>
+
+                    </div>
+                    <div id="tokenDiv" style="display: none">
+                        <p>Обработка файла заняла больше времени, чем планировалось. </p>
+                        <p>Вы можете записать этот токен, и позже ввести его на сайте или подожать готовности файла</p>
+                        <h1 class="text-center">
+                            <strong class="badge badge-success" id="acquiredToken">123ab5651cd685</strong>
+                        </h1>
+                    </div>
                 </div>
                 <div class="alert alert-success my-3 fade collapse" data-toggle="false" role="alert" id="modalReadyAlert">
                     <strong>Файл готов к скачиванию.
-                        <a id="modalDownloadLink" class="alert-link" href="">Перейти</a>
+                        <a id="modalDownloadLink" class="alert-link" href="">Скачать</a>
                     </strong>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary closeModalButton" data-dismiss="modal"  style="display: none">Закрыть</button>
                 </div>
             </div>
         </div>
