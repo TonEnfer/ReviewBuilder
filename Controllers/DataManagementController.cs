@@ -33,6 +33,7 @@ namespace ReviewBuilder.Controllers
                     }
                 }
             });
+            GC.Collect();
         }
     }
 }
